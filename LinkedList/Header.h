@@ -22,6 +22,7 @@ template<typename T, typename K, typename Q>
 class datax { 
 	Node<T> *top;
 	Node<T> *bot;
+	Node<T> *sorted;
 	//Temporary pointers 
 	Node<T> *storeprev;
 	Node<T> *storenext;
@@ -29,6 +30,7 @@ public:
 	datax() {
 		top = NULL;
 		bot = NULL;
+		sorted = NULL;
 		storeprev = NULL;
 		storenext = NULL;
 	}
@@ -43,7 +45,7 @@ public:
 	//Insert Sort
 	void insertsort(Node<T>* a, Node<T> *b);
 	//Quick Sort
-	void quicksort(Node<T>* a, Node<T>* b);
+	void quicksort(Node<T>* a, Node<T>* b, Node<T>* c);
 	Node<T>* head();
 	Node<T>* end();
 	T orderch();
@@ -121,6 +123,7 @@ void datax<T, K, Q>::insert(T a) {
 	//First time putting data into the list ( Creating first node). Won't be used again unless list loses all nodes, which is impossible
 	if (top == NULL) {
 		top = ptr;
+		sorted = ptr;
 	}
 	bot = ptr;
 }
@@ -192,18 +195,18 @@ void datax<T, K, Q>::insertsort(Node<T>* a, Node<T> *b) {
 
 //Quick Sort
 template<typename T, typename K, typename Q>
-void datax<T, K, Q>::quicksort(Node<T>* a, Node<T>* b) {
-	bool change = false;
-	int save = 0;
-	Node<int> *beg = a;
-	Node<int> *end = a;
+void datax<T, K, Q>::quicksort(Node<T>* a, Node<T>* b, Node<T>* c) {
+bool change = false;
+ int save = 0;
+ Node<int> *beg = a;
+ Node<int> *end = a;
 	//middle of the graph
-	Node<int> *pivot = b;
+ Node<int> *pivot = b;
 	if (top == NULL) {
 		return;
 	}
 	while (beg != b) {
-		if (beg == NULL|| end == NULL) {
+		if (beg == NULL || end == NULL) {
 			return;
 		}
 		//Makes sure that lesser values are at the left and higher values are to the right
@@ -213,7 +216,7 @@ void datax<T, K, Q>::quicksort(Node<T>* a, Node<T>* b) {
 			end->record = save;
 			end = end->next;
 		}
-			beg = beg->next;
+		beg = beg->next;
 	}
 	//The highest value gets put at the end of the list.
 	//Value at end of list gets put at the previous space of the higher value
@@ -221,14 +224,15 @@ void datax<T, K, Q>::quicksort(Node<T>* a, Node<T>* b) {
 	b->record = end->record;
 	end->record = save;
 	//checks to see if list is ordered
-	if (orderch()) {
-		return;
-	}
 	if (b != NULL && a != b && a != b->next) {
-		if(change == true){
+		quicksort(top, pivot->prev,sorted);
+		if (sorted->next != NULL) {
+			sorted = sorted->next;
+			quicksort(pivot->next, bot,sorted);
 		}
-			quicksort(top, pivot->prev);
-			quicksort(pivot->next, bot);
+		else {
+			return;
+		}
 	}
 }
 //Scans list to see if everything is ordered ( least to greatest)
